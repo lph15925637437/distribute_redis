@@ -17,6 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
+
+/**
+ * 进行@RateLimiter注解方法的拦截并限流
+ * @author: lph
+ * @date:  2019/6/11 13:52
+ * @version V1.0
+ */
 @Configuration
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     private Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
@@ -37,6 +44,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                     Jedis jedis = jedisPool.getResource();
                     String token = RedisRateLimiter.acquireTokenFromBucket(jedis, limit, timeout);
                     if (token == null) {
+                        logger.info("进行限流后的处理");
                         response.sendError(500, "进行限流处理");
                         return false;
                     }
