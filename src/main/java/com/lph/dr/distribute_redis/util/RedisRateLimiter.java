@@ -1,7 +1,6 @@
 package com.lph.dr.distribute_redis.util;
 
 
-import org.springframework.data.redis.core.StringRedisTemplate;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.ZParams;
@@ -22,10 +21,9 @@ public class RedisRateLimiter {
     private static final String BUCKET_MONITOR = "BUCKET_MONITOR";
 
     public static String acquireTokenFromBucket(
-            Jedis jedis, int limit, long timeout, StringRedisTemplate redisTemplate) {
+            Jedis jedis, int limit, long timeout) {
         String identifier = UUID.randomUUID().toString();
         long now = System.currentTimeMillis();
-        redisTemplate.multi();
         Transaction transaction = jedis.multi();
 
 //删除信号量

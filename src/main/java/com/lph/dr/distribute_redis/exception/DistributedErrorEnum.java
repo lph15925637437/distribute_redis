@@ -9,7 +9,9 @@ package com.lph.dr.distribute_redis.exception;
  */
 public enum DistributedErrorEnum {
     D_LOCK("D10000", "加锁失败!"),
-    D_UNLOCK("D10000", "解锁失败!"),
+    D_UNLOCK("D10001", "解锁失败!"),
+    API_REQUEST_TOO_MUCH("10001", "请求过于频繁!!"),
+    BAD_REQUEST("10002", "请查看redis是否开启!!"),
     ;
     private String errorCode;
     

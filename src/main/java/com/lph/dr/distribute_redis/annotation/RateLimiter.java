@@ -9,9 +9,10 @@ import java.lang.annotation.*;
  * @date:  2019/6/11 13:55
  * @version V1.0
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @Documented
+@Target({ElementType.FIELD,ElementType.TYPE,ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface RateLimiter {
     int limit() default 5;
     int timeout() default 1000;
