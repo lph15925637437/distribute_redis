@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 通过redis实现分布式锁工具类
+ * 通过redis实现分布式锁工具类(单机情况下)
  * @author: lph
  * @date:  2019/6/11 15:55
  * @version V1.0
@@ -53,7 +53,7 @@ public class DistributedLockComponent {
             long end = System.currentTimeMillis() + acquireTimeout;
             while (System.currentTimeMillis() < end) {
                 if (RedisConstant.EX_RET_STATUS.equals(conn.setex(lockKey, lockExpire, identifier))) {
-                    conn.expire(lockKey, lockExpire);
+                    // conn.expire(lockKey, lockExpire);
                     // 返回value值，用于释放锁时间确认
                     retIdentifier = identifier;
                     return retIdentifier;

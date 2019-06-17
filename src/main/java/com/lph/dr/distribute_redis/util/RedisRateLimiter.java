@@ -1,6 +1,7 @@
 package com.lph.dr.distribute_redis.util;
 
 
+import org.springframework.data.redis.core.StringRedisTemplate;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.ZParams;
@@ -21,13 +22,15 @@ public class RedisRateLimiter {
     private static final String BUCKET_MONITOR = "BUCKET_MONITOR";
 
     public static String acquireTokenFromBucket(
-            Jedis jedis, int limit, long timeout) {
+            Jedis jedis, int limit, long timeout, StringRedisTemplate redisTemplate) {
         String identifier = UUID.randomUUID().toString();
         long now = System.currentTimeMillis();
+        redisTemplate.multi();
         Transaction transaction = jedis.multi();
 
 //删除信号量
         transaction.zremrangeByScore(BUCKET_MONITOR.getBytes(), "-inf".getBytes(), String.valueOf(now - timeout).getBytes());
+
         ZParams params = new ZParams();
         params.weightsByDouble(1.0, 0.0);
         transaction.zinterstore(BUCKET, params, BUCKET, BUCKET_MONITOR);
@@ -48,6 +51,7 @@ public class RedisRateLimiter {
             return identifier;
         } else {//没有获取到信号量，清理之前放入redis 中垃圾数据
             transaction = jedis.multi();
+
             transaction.zrem(BUCKET_MONITOR, identifier);
             transaction.zrem(BUCKET, identifier);
             transaction.exec();

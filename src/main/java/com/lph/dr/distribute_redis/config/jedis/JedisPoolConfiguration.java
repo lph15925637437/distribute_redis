@@ -1,29 +1,35 @@
 package com.lph.dr.distribute_redis.config.jedis;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * jedisPool连接池配置
- * @author: lph
- * @date:  2019/6/11 10:35
+ *
  * @version V1.0
+ * @author: lph
+ * @date: 2019/6/11 10:35
  */
 @Configuration
 @PropertySource("classpath:redis.properties")
 public class JedisPoolConfiguration {
-    @Value("${redis.hostName}")
-    private String hostName;
-    @Value("${redis.port}")
-    private int port;
-    @Value("${redis.password}")
+
+    @Value("${spring.redis.host}")
+    private String ipHostPair;
+
+    @Value("${spring.redis.password}")
     private String password;
-    @Value("${redis.timeout}")
+
+    @Value("${spring.redis.timeout}")
     private Integer timeout;
 
     @Value("${redis.maxIdle}")
@@ -49,54 +55,6 @@ public class JedisPoolConfiguration {
 
     @Value("${redis.testWhileIdle}")
     private boolean testWhileIdle;
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Integer getTimeout() {
-        return timeout;
-    }
-
-    public Integer getMaxIdle() {
-        return maxIdle;
-    }
-
-    public Integer getMaxTotal() {
-        return maxTotal;
-    }
-
-    public Integer getMaxWaitMillis() {
-        return maxWaitMillis;
-    }
-
-    public Integer getMinEvictableIdleTimeMillis() {
-        return minEvictableIdleTimeMillis;
-    }
-
-    public Integer getNumTestsPerEvictionRun() {
-        return numTestsPerEvictionRun;
-    }
-
-    public long getTimeBetweenEvictionRunsMillis() {
-        return timeBetweenEvictionRunsMillis;
-    }
-
-    public boolean isTestOnBorrow() {
-        return testOnBorrow;
-    }
-
-    public boolean isTestWhileIdle() {
-        return testWhileIdle;
-    }
 
     /**
      * JedisPoolConfig 连接池
@@ -127,9 +85,22 @@ public class JedisPoolConfiguration {
         return jedisPoolConfig;
     }
 
-    @Bean
-    public JedisPool jedisPool(JedisPoolConfig config){
-        return new JedisPool(config, "127.0.0.1", 6379);
-    }
+    @Autowired
+    private Environment env;
 
+    public static final Logger logger = LoggerFactory.getLogger(JedisPoolConfiguration.class);
+
+    @Bean
+    public JedisPool jedisPool(JedisPoolConfig config) {
+
+        String property = env.getProperty("redis.timeBetweenEvictionRunsMillis");
+        logger.info("=============================：{}", property);
+        String ipAndPort = null;
+        if (ipHostPair.split(",").length == 1) {
+            ipAndPort = ipHostPair;
+        } else {
+            ipAndPort = ipHostPair.split(",")[0];
+        }
+        return new JedisPool(config, ipAndPort.split(":")[0], Integer.valueOf(ipAndPort.split(":")[1]));
+    }
 }
