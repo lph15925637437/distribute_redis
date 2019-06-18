@@ -18,7 +18,7 @@ public class TestTypeConvert {
 
         System.err.println("转换后数据:" + JSON.toJSONString(convertDTO));
         try {
-            String text = new ObjectMapper().writeValueAsString(convertDTO);
+            String text = new ObjectMapper().writeValueAsString(convertDTO);// 必须用这种方式进行转换，用Json的方式将不进行格式化处理
             System.err.println("text:" + text);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
