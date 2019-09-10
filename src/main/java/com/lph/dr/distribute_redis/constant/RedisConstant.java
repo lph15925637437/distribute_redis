@@ -8,8 +8,10 @@ package com.lph.dr.distribute_redis.constant;
  */
 public class RedisConstant {
 
-    public static final String KEY_PRE = "lock:%s"; // 分布式锁前缀
+    // @formatter:off 带该注释的注解不进行格式化
+    public static final String KEY_PRE =          "lock:%s"; // 分布式锁前缀
 
+    // @formatter:on 带该注释的注解进行格式化
     public static final String EX_RET_STATUS = "OK"; // 加锁后返回状态码
 
 }

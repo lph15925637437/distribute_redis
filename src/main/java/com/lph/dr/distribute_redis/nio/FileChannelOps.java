@@ -1,11 +1,6 @@
-package com.lph.dr.distribute_redis.controller;
+package com.lph.dr.distribute_redis.nio;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lph.dr.distribute_redis.dto.TypeConvertDTO;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.lph.dr.distribute_redis.util.CsvUtil;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -14,28 +9,12 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
-@RestController
-public class TestTypeConvert {
-
-    @RequestMapping("/type")
-    public String type() {
-        TypeConvertDTO convertDTO = new TypeConvertDTO();
-
-        System.err.println("转换后数据:" + JSON.toJSONString(convertDTO));
-        try {
-            String text = new ObjectMapper().writeValueAsString(convertDTO);// 必须用这种方式进行转换，用Json的方式将不进行格式化处理
-            System.err.println("text:" + text);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return "";
-    }
+public class FileChannelOps {
 
     public static void main(String[] args) throws IOException {
-        TestTypeConvert fcChannelTest = new TestTypeConvert();
-        fcChannelTest.readFile();
+        FileChannelOps fcChannelTest = new FileChannelOps();
         fcChannelTest.writeFile();
+        fcChannelTest.readFile();
     }
 
     private void writeFile() {
@@ -45,15 +24,15 @@ public class TestTypeConvert {
             FileChannel fileChannel = outputStream.getChannel();
             CharBuffer charBuffer = CharBuffer.allocate(1024);
             //往缓冲区存放数据
-            charBuffer.put("hello world, 中转");
+            charBuffer.put("hello world, 中转hg");
             //重设缓冲区
             charBuffer.flip();
-            Charset charset=Charset.defaultCharset();
-            ByteBuffer byteBuffer=charset.encode(charBuffer);
+            Charset charset = Charset.defaultCharset();
+            ByteBuffer byteBuffer = charset.encode(charBuffer);
 
             //不能确定channel.write()能一次性写入buffer的所有数据
             //所以通过判断是否有余留循环写入
-            while(byteBuffer.hasRemaining()){
+            while (byteBuffer.hasRemaining()) {
                 fileChannel.write(byteBuffer);
             }
 
@@ -68,8 +47,12 @@ public class TestTypeConvert {
     }
 
     public void readFile() throws IOException {
+
+        // 对文件的编码进行获取方便加以判断
+        String charCode = CsvUtil.getTxtEncodeWithoutClose(new FileInputStream(new File("D:\\hello.txt")));
+        System.err.println(charCode);
         // 文件编码是utf8,需要用utf8解码
-        Charset charset = Charset.forName("utf-8");
+        Charset charset = Charset.forName(charCode);
         CharsetDecoder decoder = charset.newDecoder();
 
         File file = new File("D:\\hello.txt");
