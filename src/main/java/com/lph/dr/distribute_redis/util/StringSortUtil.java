@@ -50,9 +50,9 @@ public class StringSortUtil {
 //        list.add("to");
 //        list.add("java");
         List<StringSortBean> list = new ArrayList<>();
-        list.add(new StringSortBean("14", "hauskj"));
-        list.add(new StringSortBean("12", "hauskj"));
-        list.add(new StringSortBean("13", "hauskj"));
+        list.add(new StringSortBean("14", "bauskj"));
+        list.add(new StringSortBean("12", "causkj"));
+        list.add(new StringSortBean("13", "aj"));
         System.err.println("sort前：" + JSON.toJSONString(list));
         sort("3", null, list);
         System.err.println("sort后：" + JSON.toJSONString(list));
